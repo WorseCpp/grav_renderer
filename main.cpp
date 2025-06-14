@@ -18,7 +18,7 @@
 
 #include <utility>
 
-constexpr int scr = 5;
+constexpr int scr = 1;
 
 int SCR_WIDTH = 800 / scr;
 int SCR_HEIGHT = 600 / scr;
@@ -311,8 +311,8 @@ Ray linearize_ray(const Ray& ray) {
     while (true) {
         
         float h = .1;
-        redo:
         int strike = 0;
+        redo:
         auto [new_u, new_phi, new_du_dphi] = RK4(u0, phi0, du_dphi, h);
         strike ++;
 
@@ -320,8 +320,9 @@ Ray linearize_ray(const Ray& ray) {
         {
             h /= 5;
 
-            if (strike > 5)
+            if (strike > 15)
             {
+                std::cout << "Struck out\n";
                 return Ray(glm::vec3(sphereRadius * 10), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0), 0);
             }
 
@@ -406,11 +407,10 @@ glm::vec3 sample(const std::vector<Ray>& rays, const std::vector<Star>& stars) {
                 accumulatedColor += star.c * star.l; // Assuming star.l is the light intensity.
                 break; // Stop checking other stars once we hit one.
             }
-            else if (glm::length(ray.position) < sphereRadius)
-            {
-                accumulatedColor += glm::vec3(.003f);
-            }
         }
+        if (glm::length(ray.position) < sphereRadius )
+            accumulatedColor += glm::vec3(.03) / (float)rays.size();
+
     }
     
     // Return the average color from all sample rays.
@@ -421,25 +421,6 @@ glm::vec3 sample(const std::vector<Ray>& rays, const std::vector<Star>& stars) {
 
 static std::mt19937 gen(1); //std::random_device{}());
 int main() {
-
-
-    Ray testRay(glm::vec3(100.0f, 0.0f, 0.0f), glm::normalize(glm::vec3(-.9f, 0.1f, 0.0f)), glm::vec3(1.0f), 0.0f);
-    //std::cout << "Created ray at (" 
-    //          << testRay.position.x << ", " << testRay.position.y << ", " << testRay.position.z << ")"
-    //          << " with direction (" 
-    //          << testRay.direction.x << ", " << testRay.direction.y << ", " << testRay.direction.z << ")" 
-    //          << std::endl;
-
-              
-    auto linray = linearize_ray(testRay);
-
-    //std::cout << "Linearized ray at (" 
-    //          << linray.position.x << ", " << linray.position.y << ", " << linray.position.z << ")"
-    //          << " with direction (" 
-    //          << linray.direction.x << ", " << linray.direction.y << ", " << linray.direction.z << ")"
-    //          << " and color (" 
-    //          << linray.color.r << ", " << linray.color.g << ", " << linray.color.b << ")" 
-    //          << std::endl;
 
     glm::vec3 pos(-10.0f, 0.0f, 0.0f);
     glm::vec3 front(1.0f, 0.0f, 0.0f);
@@ -452,7 +433,7 @@ int main() {
     std::vector<Star> stars; // Populate with stars if desired.
             
     // Populate stars evenly distributed on a sphere of radius 10000
-    const int numStars = 100;
+    const int numStars = 1000;
     const float goldenRatio = (1.0f + std::sqrt(5.0f)) / 2.0f;
     const float angleIncrement = 2.0f * 3.14159265358979323846f * goldenRatio;
 
@@ -509,7 +490,7 @@ int main() {
 
 
     // Example usage of Camera within main
-    for (p; p > 0; p--){
+    for (p=10; p >= 0; p--){
         M = std::pow(10, -p);
 
         // Fill capturedScreen with a simple gradient image.
