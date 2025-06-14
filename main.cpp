@@ -490,12 +490,12 @@ int main() {
 
 
     // Example usage of Camera within main
-    for (p=10; p >= 0; p--){
+    for (p=8; p >= 6; p -= .01){
         M = std::pow(10, -p);
-
+        std::cout << "\rProgress: " << (8-p) * 50 << "%" << std::flush;
+            
         // Fill capturedScreen with a simple gradient image.
         for (size_t y = 0; y < camera.capturedScreen.size(); y++) {
-            std::cout << "\rProgress: " << (100.0 * y / camera.capturedScreen.size()) << "%" << std::flush;
             for (size_t x = 0; x < camera.capturedScreen[0].size(); x++) {
             
                 auto rays = camera.get_rays(y, x);
@@ -506,7 +506,7 @@ int main() {
 
         // Dump the generated photo to 'output.ppm'
         std::stringstream ss;
-        ss << "gr-e" << p <<"-" << scr<< ".ppm";
+        ss << "vid/gr-e" << p <<"-" << scr<< ".ppm";
         dumpPhoto(ss.str(), camera.capturedScreen);
     }
 
